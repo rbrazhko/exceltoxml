@@ -30,8 +30,7 @@ class XmlTemplates
      */
     public static function getOfferTemplate()
     {
-        return '
-                <offer id="[[OFFER_ID]]" available="[[AVAILABLE]]">
+        return '<offer id="[[OFFER_ID]]" available="[[AVAILABLE]]">
                     <url>
                         [[URL]]
                     </url>
@@ -45,7 +44,8 @@ class XmlTemplates
                     </name>
                     <description>[[DESCRIPTION]]</description>
                     [[PARAMS]]
-                </offer>';
+                </offer>
+                ';
     }
 
     /**

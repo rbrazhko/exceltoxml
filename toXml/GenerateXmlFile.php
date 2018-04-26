@@ -9,6 +9,9 @@ class GenerateXmlFile
     /** @var string */
     protected $tmpFile;
 
+    /** @var array  */
+    protected $generatedOfferIds = [];
+
     public function __construct()
     {
         $this->brand = $_POST['brand'];
@@ -71,6 +74,7 @@ class GenerateXmlFile
         $generalKeys = [
             'Артикул',
             'Наименование',
+            'URL',
             'Описание',
             'Розничная цена',
             'Наличие (+ або -)',
@@ -119,8 +123,12 @@ class GenerateXmlFile
         if (!$offerId) {
             return '';
         }
+        if (in_array($offerId, $this->generatedOfferIds)) {
+            throw new \Exception('Ошибка: Товар с Артикул "' . $offerId . '"" уже существует');
+        }
+        $this->generatedOfferIds[] = $offerId;
 
-        $trimmedUrls = str_replace(', ', ',', trim($row[$paramsColumnsMapping['Ссылки на изображение (более одной ссылки пишем через запятую)']]));
+        $trimmedUrls = str_replace(', ', ',', trim($row[$generalColumnsMapping['Ссылки на изображение (более одной ссылки пишем через запятую)']]));
         $pictures = explode(',', $trimmedUrls);
         $picturesXml = '';
         foreach ($pictures as $pictureUrl) {
@@ -139,7 +147,7 @@ class GenerateXmlFile
 
         return strtr(XmlTemplates::getOfferTemplate(), [
             '[[OFFER_ID]]' => $offerId,
-            '[[AVAILABLE]]' => (trim($row[$generalColumnsMapping['Наличие (+ або -)']]) == '+') ? true : false,
+            '[[AVAILABLE]]' => (trim($row[$generalColumnsMapping['Наличие (+ або -)']]) == '+') ? 'true' : 'false',
             '[[URL]]' => $this->wrapValue($row[$generalColumnsMapping['URL']]),
             '[[PRICE]]' => $this->wrapValue($row[$generalColumnsMapping['Розничная цена']]),
             '[[CURRENCY_NAME]]' => 'UAH',
