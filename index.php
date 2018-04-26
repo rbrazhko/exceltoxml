@@ -1,34 +1,17 @@
 <?php
-    include_once 'simplexslx.php';
+    include_once 'library/simplexslx.php';
+    include_once 'toXml/GenerateXmlFile.php';
 
     $errorMessage = '';
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         try {
-            if ($_FILES['excel']['error']) {
-                throw new \Exception('Ошибка ' . $_FILES['excel']['error'] .  ': Файл не загружен');
-            }
-
-            if (!$_FILES['excel']['tmp_name'] || !is_file($_FILES['excel']['tmp_name'])) {
-                throw new \Exception('Ошибка: Не удалось временно сохранить Excel файл');
-            }
-
-            print_r(parseFile($_FILES['excel']['tmp_name']));
-
+            $generator = new GenerateXmlFile();
+            $generator->generate();
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
         }
     }
 
-    function parseFile($filepath)
-    {
-        $result = [];
-        if ($xlsx = SimpleXLSX::parse($filepath)) {
-           $result = $xlsx->rows();
-         } else {
-           echo SimpleXLSX::parse_error();
-         }
-        return $result;
-    }
 ?>
 <html>
     <head>
@@ -47,6 +30,12 @@
         <form enctype="multipart/form-data" method="POST" class="form-send-excel">
             <div class="text-center mb-4">
                 <h1 class="h3 mb-3 font-weight-normal"> Excel => XML </h1>
+                <a href="assets/excel_example.xlsx">Скачать пустой Excel файл</a>
+            </div>
+
+            <div class="form-label-group">
+                <input type="text" name="brand" class="form-control" id="brand">
+                <label for="brand">Бренд:</label>
             </div>
 
             <div class="form-label-group">
