@@ -17,6 +17,7 @@ class XmlTemplates
             </currencies>
             <categories>
                 <category id="1">Мобильные телефоны</category>
+                <category id="2">Аксессуары для мобильных телефонов и смартфонов</category>
             </categories>
             <offers>
                 [[OFFERS]]

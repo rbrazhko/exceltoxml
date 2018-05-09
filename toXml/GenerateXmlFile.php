@@ -78,6 +78,7 @@ class GenerateXmlFile
             'Описание',
             'Розничная цена',
             'Наличие (+ або -)',
+            'Категория №',
             'Бренд',
             'Ссылки на изображение (более одной ссылки пишем через запятую)'
         ];
@@ -139,6 +140,9 @@ class GenerateXmlFile
 
         $paramsXml = '';
         foreach ($paramsColumnsMapping as $paramName => $index) {
+            if ($row[$index] == '---') {
+                continue;
+            }
             $paramsXml .= strtr(XmlTemplates::getParamTemplate(), [
                 '[[PARAM_NAME]]' => $paramName,
                 '[[PARAM_VALUE]]' => $this->wrapValue($row[$index]),
@@ -151,7 +155,7 @@ class GenerateXmlFile
             '[[URL]]' => $this->wrapValue($row[$generalColumnsMapping['URL']]),
             '[[PRICE]]' => $this->wrapValue($row[$generalColumnsMapping['Розничная цена']]),
             '[[CURRENCY_NAME]]' => 'UAH',
-            '[[CATEGORY_ID]]' => '1',
+            '[[CATEGORY_ID]]' => $this->wrapValue($row[$generalColumnsMapping['Категория №']]),
             '[[PICTURES]]' => $picturesXml,
             '[[VENDOR]]' => $this->wrapValue($row[$generalColumnsMapping['Бренд']]),
             '[[OFFER_NAME]]' => $this->wrapValue($row[$generalColumnsMapping['Наименование']]),
