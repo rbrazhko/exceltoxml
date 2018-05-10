@@ -18,6 +18,8 @@ class XmlTemplates
             <categories>
                 <category id="1">Мобильные телефоны</category>
                 <category id="2">Аксессуары для мобильных телефонов и смартфонов</category>
+                <category id="3">Компьютеры и ноутбуки</category>
+                <category id="4">Медиаплееры</category>
             </categories>
             <offers>
                 [[OFFERS]]
