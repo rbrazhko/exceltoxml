@@ -20,6 +20,15 @@ class XmlTemplates
                 <category id="2">Аксессуары для мобильных телефонов и смартфонов</category>
                 <category id="3">Компьютеры и ноутбуки</category>
                 <category id="4">Медиаплееры</category>
+                <category id="5">Автотовары</category>
+                <category id="6">Красота и здоровье</category>
+                <category id="7">Товары для дома</category>
+                <category id="8">Электроника</category>
+                <category id="9">Игрушки для детей</category>
+                <category id="10">Спорт, Здоровье, Туризм</category>
+                <category id="11">Всё для ремонта, инструменты</category>
+                <category id="12">TV Shop товары</category>
+                <category id="13">Кошельки и клатчи</category>
             </categories>
             <offers>
                 [[OFFERS]]
