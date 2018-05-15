@@ -20,9 +20,9 @@ class XmlTemplates
                 <category id="2">Аксессуары для мобильных телефонов и смартфонов</category>
                 <category id="3">Компьютеры и ноутбуки</category>
                 <category id="4">Медиаплееры</category>
-                <category id="5">Автотовары</category>
+                <category id="5">Автопринадлежности</category>
                 <category id="6">Красота, здоровье, уход</category>
-                <category id="7">Товары для дома</category>
+                <category id="7">Камеры заднего вида</category>
                 <category id="8">Электроника</category>
                 <category id="9">Игрушки для детей</category>
                 <category id="10">Спорт, Здоровье, Туризм</category>
@@ -41,6 +41,20 @@ class XmlTemplates
                 <category id="23">Кофеварки</category>
                 <category id="24">Рюкзаки</category>
                 <category id="25">Уличное освещение</category>
+                <category id="26">Наушники Apple</category>
+                <category id="27">Чехлы для мобильных телефонов Apple</category>
+                <category id="28">Акустические системы Apple</category>
+                <category id="29">Мыши Apple</category>
+                <category id="30">Акустические системы JBL</category>
+                <category id="31">Планшеты Apple</category>
+                <category id="32">Зарядные устройства</category>
+                <category id="33">Термосы и бутылки</category>
+                <category id="34">FM-трансмиттеры</category>
+                <category id="35">Видеорегистраторы</category>
+                <category id="36">Дневные ходовые огни</category>
+                <category id="37">Блоки питания для ноутбуков</category>
+                <category id="38">Машинки для стрижки и триммеры</category>
+                <category id="39">Эпиляторы и женские электробритвы</category>
             </categories>
             <offers>
                 [[OFFERS]]
