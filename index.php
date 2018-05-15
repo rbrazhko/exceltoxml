@@ -34,16 +34,21 @@
             </div>
 
             <div class="form-label-group">
-                <input type="text" name="brand" class="form-control" id="brand">
+                <input required type="text" name="companyName" class="form-control" id="companyName" value="Smuzi Market">
+                <label for="companyName">Название компании:</label>
+            </div>
+
+            <div class="form-label-group">
+                <input required type="text" name="brand" class="form-control" id="brand">
                 <label for="brand">Бренд:</label>
             </div>
 
             <div class="form-label-group">
-                <input type="file" name="excel" class="form-control" id="excelFile">
+                <input required type="file" name="excel" class="form-control" id="excelFile">
                 <label for="excelFile">Выбери файл:</label>
             </div>
-            <p class="error-message"><?= $errorMessage ?></p>
-            <input class="btn btn-lg btn-primary btn-block" type="submit"></input>
+            <p id="error-message" class="error-message"><?= $errorMessage ?></p>
+            <input class="btn btn-lg btn-primary btn-block" type="submit" onclick="document.getElementById('error-message').remove();"></input>
             <p class="mt-5 mb-3 text-muted text-center">© 2018</p>
         </form>
 

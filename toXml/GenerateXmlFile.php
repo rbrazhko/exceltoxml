@@ -3,6 +3,12 @@ include_once 'XmlTemplates.php';
 
 class GenerateXmlFile
 {
+    /** @var SimpleXLSX */
+    protected $xlsx;
+
+    /** @var string */
+    protected $companyName;
+
     /** @var string */
     protected $brand;
 
@@ -14,6 +20,7 @@ class GenerateXmlFile
 
     public function __construct()
     {
+        $this->companyName = $_POST['companyName'];
         $this->brand = $_POST['brand'];
         $this->validate();
         $this->tmpFile = $_FILES['excel']['tmp_name'];
@@ -21,6 +28,10 @@ class GenerateXmlFile
 
     protected function validate()
     {
+        if (!$this->companyName) {
+            throw new \Exception('Ошибка : Не указано поле "Компания"');
+        }
+
         if (!$this->brand) {
             throw new \Exception('Ошибка : Не указано поле "Бренд"');
         }
@@ -37,8 +48,11 @@ class GenerateXmlFile
 
     public function generate()
     {
-        $rows = $this->parseFile();
-        $xmlData = $this->generateXmlFile($rows);
+        $categories = $this->parseFile('Категории');
+        $categoriesXml = $this->generateCategoriesXml($categories);
+
+        $goods = $this->parseFile('Товары');
+        $xmlData = $this->generateXmlFile($goods, $categoriesXml);
 
         header('Content-Disposition: attachment; filename="' . $this->brand . '.xml"');
         header('Content-type: text/xml; charset="utf8"');
@@ -49,25 +63,79 @@ class GenerateXmlFile
     }
 
     /**
+     * @param string $pageName
+     *
      * @return array
      * @throws Exception
      */
-    protected function parseFile()
+    protected function parseFile($pageName)
     {
-        if ($xlsx = SimpleXLSX::parse($this->tmpFile)) {
-            $result = $xlsx->rows();
-        } else {
-            throw new \Exception('Ошибка: невозможно извлечь данные из XLSX файла (' . SimpleXLSX::parse_error() . ')');
+        if (!$this->xlsx) {
+            if (!$xlsx = SimpleXLSX::parse($this->tmpFile)) {
+                throw new \Exception('Ошибка: невозможно извлечь данные из XLSX файла (' . SimpleXLSX::parse_error() . ')');
+            }
+
+            $this->xlsx = $xlsx;
         }
+
+        $pages = $this->xlsx->sheetNames();
+        $pageNumber = array_search($pageName, $pages);
+        if ($pageNumber === false) {
+            throw new \Exception('Ошибка: в Excel файле отсутствует страница "' . $pageName . '"');
+        }
+        $result = $this->xlsx->rows($pageNumber + 1);
         return $result;
     }
 
     /**
-     * @param array $rows
+     * @param array  $rows
      *
      * @return string
+     * @throws Exception
      */
-    protected function generateXmlFile($rows)
+    protected function generateCategoriesXml($rows)
+    {
+        $columnNameToIndex = array_flip($rows[0]);
+
+        $generalKeys = [
+            '№',
+            'Категория'
+        ];
+
+        $generalColumnsMapping = [];
+        foreach ($columnNameToIndex as $columnName => $index) {
+            if (!in_array($columnName, $generalKeys)) {
+                continue;
+            }
+            $generalColumnsMapping[trim($columnName)] = $index;
+        }
+        if (!$generalColumnsMapping || count($generalKeys) !== count($generalColumnsMapping)) {
+            throw new \Exception('Ошибка: Неверно указаны заголовки колонок. Необходимые колонки: ' . implode(', ', $generalKeys));
+        }
+
+        $categoriesXml = '';
+        foreach ($rows as $number => $row) {
+            if ($number == 0) {
+                continue;
+            }
+
+            $categoriesXml .= strtr(XmlTemplates::getCategoryTemplate(), [
+                '[[CATEGORY_ID]]' => $this->wrapValue($row[$generalColumnsMapping['№']]),
+                '[[CATEGORY_NAME]]' => $this->wrapValue($row[$generalColumnsMapping['Категория']])
+            ]);
+        }
+
+        return $categoriesXml;
+    }
+
+    /**
+     * @param array  $rows
+     * @param string $categoriesXml
+     *
+     * @return string
+     * @throws Exception
+     */
+    protected function generateXmlFile($rows, $categoriesXml)
     {
         $columnNameToIndex = array_flip($rows[0]);
 
@@ -90,6 +158,9 @@ class GenerateXmlFile
             }
             $generalColumnsMapping[trim($columnName)] = $index;
         }
+        if (!$generalColumnsMapping || count($generalKeys) !== count($generalColumnsMapping)) {
+            throw new \Exception('Ошибка: Неверно указаны заголовки колонок. Необходимые колонки: ' . implode(', ', $generalKeys));
+        }
 
         $paramsColumnsMapping = [];
         foreach ($columnNameToIndex as $columnName => $index) {
@@ -111,7 +182,8 @@ class GenerateXmlFile
         $xmlLayout = strtr(XmlTemplates::getXmlLayoutTemplate(), [
             '[[DATE]]' => date('Y-m-d H:i'),
             '[[BRAND_NAME]]' => $this->brand,
-            '[[COMPANY]]' => 'Smuzi Market',
+            '[[COMPANY_NAME]]' => $this->companyName,
+            '[[CATEGORIES]]' => $categoriesXml,
             '[[OFFERS]]' => $offers
         ]);
 
