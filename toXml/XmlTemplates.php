@@ -41,12 +41,12 @@ class XmlTemplates
                 <category id="23">Кофеварки</category>
                 <category id="24">Рюкзаки</category>
                 <category id="25">Уличное освещение</category>
-                <category id="26">Наушники Apple</category>
-                <category id="27">Чехлы для мобильных телефонов Apple</category>
-                <category id="28">Акустические системы Apple</category>
-                <category id="29">Мыши Apple</category>
-                <category id="30">Акустические системы JBL</category>
-                <category id="31">Планшеты Apple</category>
+                <category id="26">Наушники</category>
+                <category id="27">Чехлы для мобильных телефонов</category>
+                <category id="28">Акустические системы</category>
+                <category id="29">Мыши</category>
+                <category id="30">Ручные/Автомобильные пылесосы</category>
+                <category id="31">Планшеты</category>
                 <category id="32">Зарядные устройства</category>
                 <category id="33">Термосы и бутылки</category>
                 <category id="34">FM-трансмиттеры</category>
@@ -55,6 +55,7 @@ class XmlTemplates
                 <category id="37">Блоки питания для ноутбуков</category>
                 <category id="38">Машинки для стрижки и триммеры</category>
                 <category id="39">Эпиляторы и женские электробритвы</category>
+                <category id="40">Держатели</category>
             </categories>
             <offers>
                 [[OFFERS]]
