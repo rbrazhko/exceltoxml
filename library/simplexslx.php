@@ -901,6 +901,21 @@ class SimpleXLSX {
         return false;
     }
 
+    public function getSheetKeyByName( $pageName ) {
+        if ( ! isset( $this->workbook->sheets->sheet ) ) {
+            return false;
+        }
+        foreach ( $this->workbook->sheets->sheet as $s ) {
+            /* @var SimpleXMLElement $s */
+            if ( (string) $s->attributes()->name === (string) $pageName ) {
+                return (int)str_replace( 'rId', '', (string) $s->attributes()->id );
+            }
+
+        }
+
+        return false;
+    }
+
     public function sheetNames() {
 
         $result = array();

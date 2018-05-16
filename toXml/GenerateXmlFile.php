@@ -78,12 +78,12 @@ class GenerateXmlFile
             $this->xlsx = $xlsx;
         }
 
-        $pages = $this->xlsx->sheetNames();
-        $pageNumber = array_search($pageName, $pages);
+        $pageNumber = $this->xlsx->getSheetKeyByName($pageName);
         if ($pageNumber === false) {
             throw new \Exception('Ошибка: в Excel файле отсутствует страница "' . $pageName . '"');
         }
-        $result = $this->xlsx->rows($pageNumber + 1);
+
+        $result = $this->xlsx->rows($pageNumber);
         return $result;
     }
 
@@ -119,9 +119,15 @@ class GenerateXmlFile
                 continue;
             }
 
+            $categoryId = $this->wrapValue($row[$generalColumnsMapping['№']]);
+            $categoryName = $this->wrapValue($row[$generalColumnsMapping['Категория']]);
+            if (!$categoryId && !$categoryName) {
+                continue;
+            }
+
             $categoriesXml .= strtr(XmlTemplates::getCategoryTemplate(), [
-                '[[CATEGORY_ID]]' => $this->wrapValue($row[$generalColumnsMapping['№']]),
-                '[[CATEGORY_NAME]]' => $this->wrapValue($row[$generalColumnsMapping['Категория']])
+                '[[CATEGORY_ID]]' => $categoryId,
+                '[[CATEGORY_NAME]]' => $categoryName
             ]);
         }
 
