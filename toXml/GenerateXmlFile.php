@@ -150,6 +150,8 @@ class GenerateXmlFile
             'Наименование',
             'URL',
             'Описание',
+            'Состояние товара',
+            'Старая цена',
             'Розничная цена',
             'Наличие (+ або -)',
             'Категория №',
@@ -207,6 +209,20 @@ class GenerateXmlFile
         }
         $this->generatedOfferIds[] = $offerId;
 
+        $stateTemplate = '';
+        if ($row[$generalColumnsMapping['Состояние товара']] && $row[$generalColumnsMapping['Состояние товара']] != '---') {
+            $stateTemplate = strtr(XmlTemplates::getStateTemplate(), [
+                '[[STATE]]' => $row[$generalColumnsMapping['Состояние товара']]
+            ]);
+        }
+
+        $priceOldTemplate = '';
+        if ($row[$generalColumnsMapping['Старая цена']] && $row[$generalColumnsMapping['Старая цена']] != '---') {
+            $priceOldTemplate = strtr(XmlTemplates::getPriceOldTemplate(), [
+                '[[PRICE_OLD]]' => $row[$generalColumnsMapping['Старая цена']]
+            ]);
+        }
+
         $trimmedUrls = str_replace(', ', ',', trim($row[$generalColumnsMapping['Ссылки на изображение (более одной ссылки пишем через запятую)']]));
         $pictures = explode(',', $trimmedUrls);
         $picturesXml = '';
@@ -231,7 +247,9 @@ class GenerateXmlFile
             '[[OFFER_ID]]' => $offerId,
             '[[AVAILABLE]]' => (trim($row[$generalColumnsMapping['Наличие (+ або -)']]) == '+') ? 'true' : 'false',
             '[[URL]]' => $this->wrapValue($row[$generalColumnsMapping['URL']]),
+            '[[STATE_TEMPLATE]]' => $stateTemplate,
             '[[PRICE]]' => $this->wrapValue($row[$generalColumnsMapping['Розничная цена']]),
+            '[[PRICE_OLD_TEMPLATE]]' => $priceOldTemplate,
             '[[CURRENCY_NAME]]' => 'UAH',
             '[[CATEGORY_ID]]' => $this->wrapValue($row[$generalColumnsMapping['Категория №']]),
             '[[PICTURES]]' => $picturesXml,

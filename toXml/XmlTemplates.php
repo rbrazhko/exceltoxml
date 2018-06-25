@@ -44,7 +44,9 @@ class XmlTemplates
                     <url>
                         [[URL]]
                     </url>
+                    [[STATE_TEMPLATE]]
                     <price>[[PRICE]]</price>
+                    [[PRICE_OLD_TEMPLATE]]
                     <currencyId>[[CURRENCY_NAME]]</currencyId>
                     <categoryId>[[CATEGORY_ID]]</categoryId>
                     [[PICTURES]]
@@ -56,6 +58,26 @@ class XmlTemplates
                     [[PARAMS]]
                 </offer>
                 ';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getStateTemplate()
+    {
+        return '
+                    <state>[[STATE]]</state>';
+
+    }
+
+    /**
+     * @return string
+     */
+    public static function getPriceOldTemplate()
+    {
+        return '
+                    <price_old>[[PRICE_OLD]]</price_old>';
+
     }
 
     /**
