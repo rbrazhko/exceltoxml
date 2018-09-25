@@ -49,7 +49,7 @@
             </div>
             <p id="error-message" class="error-message"><?= $errorMessage ?></p>
             <input class="btn btn-lg btn-primary btn-block" type="submit" onclick="document.getElementById('error-message').remove();"></input>
-            <p class="mt-5 mb-3 text-muted text-center">© 2018</p>
+            <p class="mt-5 mb-3 text-muted text-center">© <?php echo date('Y'); ?></p>
         </form>
 
     </body>
