@@ -47,8 +47,8 @@ class XmlTemplates
                     [[STATE_TEMPLATE]]
                     <price>[[PRICE]]</price>
                     [[PRICE_OLD_TEMPLATE]]
+                    <stock_quantity>99</stock_quantity>
                     <currencyId>[[CURRENCY_NAME]]</currencyId>
-                    <stock_quantity></stock_quantity>
                     <categoryId>[[CATEGORY_ID]]</categoryId>
                     [[PICTURES]]
                     <vendor>[[VENDOR]]</vendor>
