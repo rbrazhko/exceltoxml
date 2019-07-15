@@ -1,5 +1,8 @@
 <?php
-class XmlTemplates
+
+namespace ExcelToXml\ToXml\Rozetka;
+
+class RozetkaXmlTemplates
 {
     /**
      * @return string
@@ -23,16 +26,6 @@ class XmlTemplates
             </offers>
         </shop>
     </yml_catalog>';
-    }
-
-    /**
-     * @return string
-     */
-    public static function getCategoryTemplate()
-    {
-        return '
-                <category id="[[CATEGORY_ID]]">[[CATEGORY_NAME]]</category>';
-
     }
 
     /**

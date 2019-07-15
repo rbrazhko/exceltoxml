@@ -1,19 +1,23 @@
 <?php
-include_once 'XmlTemplates.php';
 
-class GenerateXmlFile
+namespace ExcelToXml\ToXml\Rozetka;
+
+include_once 'RozetkaXmlTemplates.php';
+include_once __DIR__ . '/../AbstractConverter.php';
+include_once __DIR__ . '/../Mixing/CategoriesTrait.php';
+
+use ExcelToXml\ToXml\AbstractConverter;
+use ExcelToXml\ToXml\Mixing\CategoriesTrait;
+
+class Converter extends AbstractConverter
 {
-    /** @var SimpleXLSX */
-    protected $xlsx;
+    use CategoriesTrait;
 
     /** @var string */
     protected $companyName;
 
     /** @var string */
     protected $brand;
-
-    /** @var string */
-    protected $tmpFile;
 
     /** @var array  */
     protected $generatedOfferIds = [];
@@ -29,11 +33,11 @@ class GenerateXmlFile
     protected function validate()
     {
         if (!$this->companyName) {
-            throw new \Exception('Ошибка : Не указано поле "Компания"');
+            throw new \Exception('Ошибка Rozetka: Не указано поле "Компания"');
         }
 
         if (!$this->brand) {
-            throw new \Exception('Ошибка : Не указано поле "Бренд"');
+            throw new \Exception('Ошибка Rozetka: Не указано поле "Бренд"');
         }
 
         if ($_FILES['excel']['error']) {
@@ -42,11 +46,15 @@ class GenerateXmlFile
 
         $tmpFile = $_FILES['excel']['tmp_name'];
         if (!$tmpFile || !is_file($tmpFile)) {
-            throw new \Exception('Ошибка: Не удалось временно сохранить Excel файл');
+            throw new \Exception('Ошибка Rozetka: Не удалось временно сохранить Excel файл');
         }
     }
 
-    public function generate()
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    public function generateXml()
     {
         $categories = $this->parseFile('Категории');
         $categoriesXml = $this->generateCategoriesXml($categories);
@@ -54,84 +62,15 @@ class GenerateXmlFile
         $goods = $this->parseFile('Товары');
         $xmlData = $this->generateXmlFile($goods, $categoriesXml);
 
-        header('Content-Disposition: attachment; filename="' . $this->brand . '.xml"');
-        header('Content-type: text/xml; charset="utf8"');
-        echo $xmlData;
-        // if you want to directly download then set expires time
-        header("Expires: 0");
-        die;
+        return $xmlData;
     }
 
     /**
-     * @param string $pageName
-     *
-     * @return array
-     * @throws Exception
-     */
-    protected function parseFile($pageName)
-    {
-        if (!$this->xlsx) {
-            if (!$xlsx = SimpleXLSX::parse($this->tmpFile)) {
-                throw new \Exception('Ошибка: невозможно извлечь данные из XLSX файла (' . SimpleXLSX::parse_error() . ')');
-            }
-
-            $this->xlsx = $xlsx;
-        }
-
-        $pageNumber = $this->xlsx->getSheetKeyByName($pageName);
-        if ($pageNumber === false) {
-            throw new \Exception('Ошибка: в Excel файле отсутствует страница "' . $pageName . '"');
-        }
-
-        $result = $this->xlsx->rows($pageNumber);
-        return $result;
-    }
-
-    /**
-     * @param array  $rows
-     *
      * @return string
-     * @throws Exception
      */
-    protected function generateCategoriesXml($rows)
+    public function getFinalFilename()
     {
-        $columnNameToIndex = array_flip($rows[0]);
-
-        $generalKeys = [
-            '№',
-            'Категория'
-        ];
-
-        $generalColumnsMapping = [];
-        foreach ($columnNameToIndex as $columnName => $index) {
-            if (!in_array($columnName, $generalKeys)) {
-                continue;
-            }
-            $generalColumnsMapping[trim($columnName)] = $index;
-        }
-        if (!$generalColumnsMapping || count($generalKeys) !== count($generalColumnsMapping)) {
-            throw new \Exception('Ошибка: Неверно указаны заголовки колонок. Необходимые колонки: ' . implode(', ', $generalKeys));
-        }
-
-        $categoriesXml = '';
-        foreach ($rows as $number => $row) {
-            if ($number == 0) {
-                continue;
-            }
-
-            $categoryId = $this->wrapValue($row[$generalColumnsMapping['№']]);
-            $categoryName = $this->wrapValue($row[$generalColumnsMapping['Категория']]);
-            if (!$categoryId && !$categoryName) {
-                continue;
-            }
-
-            $categoriesXml .= strtr(XmlTemplates::getCategoryTemplate(), [
-                '[[CATEGORY_ID]]' => $categoryId,
-                '[[CATEGORY_NAME]]' => $categoryName
-            ]);
-        }
-
-        return $categoriesXml;
+        return $this->brand;
     }
 
     /**
@@ -139,7 +78,7 @@ class GenerateXmlFile
      * @param string $categoriesXml
      *
      * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     protected function generateXmlFile($rows, $categoriesXml)
     {
@@ -167,7 +106,7 @@ class GenerateXmlFile
             $generalColumnsMapping[trim($columnName)] = $index;
         }
         if (!$generalColumnsMapping || count($generalKeys) !== count($generalColumnsMapping)) {
-            throw new \Exception('Ошибка: Неверно указаны заголовки колонок. Необходимые колонки: ' . implode(', ', $generalKeys));
+            throw new \Exception('Ошибка Rozetka: Неверно указаны заголовки колонок. Необходимые колонки: ' . implode(', ', $generalKeys));
         }
 
         $paramsColumnsMapping = [];
@@ -187,7 +126,7 @@ class GenerateXmlFile
             $offers .= $this->generateOffer($row, $generalColumnsMapping, $paramsColumnsMapping);
         }
 
-        $xmlLayout = strtr(XmlTemplates::getXmlLayoutTemplate(), [
+        $xmlLayout = strtr(RozetkaXmlTemplates::getXmlLayoutTemplate(), [
             '[[DATE]]' => date('Y-m-d H:i'),
             '[[BRAND_NAME]]' => $this->brand,
             '[[COMPANY_NAME]]' => $this->companyName,
@@ -205,20 +144,20 @@ class GenerateXmlFile
             return '';
         }
         if (in_array($offerId, $this->generatedOfferIds)) {
-            throw new \Exception('Ошибка: Товар с Артикул "' . $offerId . '"" уже существует');
+            throw new \Exception('Ошибка Rozetka: Товар с Артикул "' . $offerId . '"" уже существует');
         }
         $this->generatedOfferIds[] = $offerId;
 
         $stateTemplate = '';
         if ($row[$generalColumnsMapping['Состояние товара']] && $row[$generalColumnsMapping['Состояние товара']] != '---') {
-            $stateTemplate = strtr(XmlTemplates::getStateTemplate(), [
+            $stateTemplate = strtr(RozetkaXmlTemplates::getStateTemplate(), [
                 '[[STATE]]' => $row[$generalColumnsMapping['Состояние товара']]
             ]);
         }
 
         $priceOldTemplate = '';
         if ($row[$generalColumnsMapping['Старая цена']] && $row[$generalColumnsMapping['Старая цена']] != '---') {
-            $priceOldTemplate = strtr(XmlTemplates::getPriceOldTemplate(), [
+            $priceOldTemplate = strtr(RozetkaXmlTemplates::getPriceOldTemplate(), [
                 '[[PRICE_OLD]]' => $row[$generalColumnsMapping['Старая цена']]
             ]);
         }
@@ -227,7 +166,7 @@ class GenerateXmlFile
         $pictures = explode(',', $trimmedUrls);
         $picturesXml = '';
         foreach ($pictures as $pictureUrl) {
-            $picturesXml .= strtr(XmlTemplates::getPicturesTemplate(), [
+            $picturesXml .= strtr(RozetkaXmlTemplates::getPicturesTemplate(), [
                 '[[PICTURE_URL]]' => $pictureUrl
             ]);
         }
@@ -237,13 +176,13 @@ class GenerateXmlFile
             if ($row[$index] == '---') {
                 continue;
             }
-            $paramsXml .= strtr(XmlTemplates::getParamTemplate(), [
+            $paramsXml .= strtr(RozetkaXmlTemplates::getParamTemplate(), [
                 '[[PARAM_NAME]]' => $paramName,
                 '[[PARAM_VALUE]]' => $this->wrapValue($row[$index]),
             ]);
         }
 
-        return strtr(XmlTemplates::getOfferTemplate(), [
+        return strtr(RozetkaXmlTemplates::getOfferTemplate(), [
             '[[OFFER_ID]]' => $offerId,
             '[[AVAILABLE]]' => (trim($row[$generalColumnsMapping['Наличие (+ або -)']]) == '+') ? 'true' : 'false',
             '[[URL]]' => $this->wrapValue($row[$generalColumnsMapping['URL']]),
@@ -258,12 +197,5 @@ class GenerateXmlFile
             '[[DESCRIPTION]]' => $this->wrapValue($row[$generalColumnsMapping['Описание']]),
             '[[PARAMS]]' => $paramsXml,
         ]);
-    }
-
-    protected function wrapValue($value) {
-        if (strpos($value, '<![CDATA[') !== false) {
-            return $value;
-        }
-        return htmlspecialchars($value);
     }
 }
