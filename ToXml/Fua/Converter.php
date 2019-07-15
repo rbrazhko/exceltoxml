@@ -214,7 +214,8 @@ class Converter extends AbstractConverter
             '[[DELIVERY_METHOD]]' => $this->wrapValue($row[$generalColumnsMapping['Метод доставки']]),
             '[[DELIVERY_NAME]]' => $this->wrapValue($row[$generalColumnsMapping['Имя доставки']]),
             '[[DELIVERY_TYPE]]' => $this->wrapValue($row[$generalColumnsMapping['Тип доставки']]),
-            '[[DELIVERY_NOTE]]' => $this->wrapValue($row[$generalColumnsMapping['Цена доставки']]),
+            '[[DELIVERY_NOTE]]' => $this->wrapValue($row[$generalColumnsMapping['Примечание по доставке']]),
+            '[[DELIVERY_PRICE]]' => $this->wrapValue($row[$generalColumnsMapping['Цена доставки']]),
 
         ]);
     }
