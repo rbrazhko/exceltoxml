@@ -92,6 +92,7 @@ class Converter extends AbstractConverter
             'Состояние товара',
             'Старая цена',
             'Розничная цена',
+            'Промо цена',
             'Наличие (+ або -)',
             'Категория №',
             'Бренд',
@@ -162,6 +163,13 @@ class Converter extends AbstractConverter
             ]);
         }
 
+        $pricePromoTemplate = '';
+        if ($row[$generalColumnsMapping['Промо цена']] && $row[$generalColumnsMapping['Промо цена']] != '---') {
+            $pricePromoTemplate = strtr(RozetkaXmlTemplates::getPricePromoTemplate(), [
+                '[[PRICE_PROMO]]' => $row[$generalColumnsMapping['Промо цена']]
+            ]);
+        }
+
         $trimmedUrls = str_replace(', ', ',', trim($row[$generalColumnsMapping['Ссылки на изображение (более одной ссылки пишем через запятую)']]));
         $pictures = explode(',', $trimmedUrls);
         $picturesXml = '';
@@ -189,6 +197,7 @@ class Converter extends AbstractConverter
             '[[STATE_TEMPLATE]]' => $stateTemplate,
             '[[PRICE]]' => $this->wrapValue($row[$generalColumnsMapping['Розничная цена']]),
             '[[PRICE_OLD_TEMPLATE]]' => $priceOldTemplate,
+            '[[PRICE_PROMO_TEMPLATE]]' => $pricePromoTemplate,
             '[[CURRENCY_NAME]]' => 'UAH',
             '[[CATEGORY_ID]]' => $this->wrapValue($row[$generalColumnsMapping['Категория №']]),
             '[[PICTURES]]' => $picturesXml,

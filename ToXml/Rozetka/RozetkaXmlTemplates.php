@@ -40,6 +40,7 @@ class RozetkaXmlTemplates
                     [[STATE_TEMPLATE]]
                     <price>[[PRICE]]</price>
                     [[PRICE_OLD_TEMPLATE]]
+                    [[PRICE_PROMO_TEMPLATE]]
                     <stock_quantity>99</stock_quantity>
                     <currencyId>[[CURRENCY_NAME]]</currencyId>
                     <categoryId>[[CATEGORY_ID]]</categoryId>
@@ -71,6 +72,16 @@ class RozetkaXmlTemplates
     {
         return '
                     <price_old>[[PRICE_OLD]]</price_old>';
+
+    }
+
+    /**
+     * @return string
+     */
+    public static function getPricePromoTemplate()
+    {
+        return '
+                    <price_promo>[[PRICE_PROMO]]</price_promo>';
 
     }
 
