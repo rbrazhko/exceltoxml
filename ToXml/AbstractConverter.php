@@ -35,13 +35,13 @@ abstract class AbstractConverter
     {
         if (!$this->xlsx) {
             if (!$xlsx = \SimpleXLSX::parse($this->tmpFile)) {
-                throw new \Exception('Ошибка: невозможно извлечь данные из XLSX файла (' . \SimpleXLSX::parse_error() . ')');
+                throw new \Exception('Ошибка: невозможно извлечь данные из XLSX файла (' . \SimpleXLSX::parseError() . ')');
             }
 
             $this->xlsx = $xlsx;
         }
 
-        $pageNumber = $this->xlsx->getSheetKeyByName($pageName);
+        $pageNumber = array_search($pageName, $this->xlsx->sheetNames());
         if ($pageNumber === false) {
             throw new \Exception('Ошибка: в Excel файле отсутствует страница "' . $pageName . '"');
         }
